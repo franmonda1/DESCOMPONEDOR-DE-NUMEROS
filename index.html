@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Descomponer Números</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-light: #dbeafe;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --green: #16a34a;
+      --green-light: #dcfce7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --amber: #d97706;
+      --amber-light: #fef3c7;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --shadow: 0 2px 6px -1px rgb(0 0 0 / 0.08), 0 1px 3px -1px rgb(0 0 0 / 0.06);
+      --shadow-lg: 0 8px 16px -4px rgb(0 0 0 / 0.1);
+      --radius: 10px;
+      --radius-sm: 7px;
+      --kb-height: 0px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      height: 100%;
+    }
+
+    body {
+      min-height: 100%;
+      font-family: 'Nunito', system-ui, sans-serif;
+      background: linear-gradient(135deg, #f0f9ff 0%, #faf5ff 50%, #fefce8 100%);
+      color: var(--gray-800);
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 10px;
+      padding-bottom: calc(12px + var(--kb-height));
+      transition: padding-bottom 0.25s ease;
+    }
+
+    /* Header - compact */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+      background: white;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+
+    .header h1 {
+      font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      white-space: nowrap;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    /* Controls - compact */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      background: white;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .control-group label {
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--gray-700);
+      white-space: nowrap;
+    }
+
+    select, .manual-input {
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 6px 10px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      background: var(--gray-50);
+      color: var(--gray-800);
+      min-width: 64px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    select:focus, .manual-input:focus {
+      outline: none;
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px var(--purple-light);
+    }
+
+    .manual-input {
+      width: 140px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .mode-toggle {
+      display: flex;
+      background: var(--gray-100);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .mode-btn {
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      background: transparent;
+      color: var(--gray-600);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+      background: white;
+      color: var(--purple);
+      box-shadow: var(--shadow);
+    }
+
+    /* Buttons */
+    .btn {
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 7px 12px;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .btn:active { transform: scale(0.96); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple), #6d28d9);
+      color: white;
+      box-shadow: 0 2px 6px rgba(124, 58, 237, 0.3);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--green), #15803d);
+      color: white;
+      box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--red), #b91c1c);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: var(--gray-100);
+      color: var(--gray-700);
+      border: 2px solid var(--gray-200);
+    }
+
+    .btn-amber {
+      background: linear-gradient(135deg, var(--amber), #b45309);
+      color: white;
+    }
+
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    /* Number display - compact */
+    .number-display {
+      text-align: center;
+      margin-bottom: 6px;
+      flex-shrink: 0;
+    }
+
+    .number-box {
+      display: inline-block;
+      background: linear-gradient(135deg, #fef9c3, #fde68a);
+      border: 2.5px solid #f59e0b;
+      border-radius: var(--radius);
+      padding: 6px 20px;
+      font-size: clamp(1.4rem, 5vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--gray-900);
+      box-shadow: var(--shadow);
+      min-width: 140px;
+    }
+
+    .arrow-down {
+      font-size: 1.2rem;
+      color: var(--purple);
+      line-height: 1.2;
+      margin: 2px 0;
+    }
+
+    /* Main content area - grows to fill space */
+    .main-content {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    /* Sections */
+    .table-section,
+    .decomp-section {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 10px 12px;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--gray-700);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Place value table - no forced scroll */
+    .place-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .place-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: fixed;
+    }
+
+    .place-table th {
+      font-size: clamp(0.65rem, 2.2vw, 0.85rem);
+      font-weight: 800;
+      padding: 6px 3px;
+      text-align: center;
+      border: 2px solid var(--gray-300);
+      background: var(--gray-50);
+      white-space: nowrap;
+    }
+
+    .place-table th:first-child { border-radius: 6px 0 0 0; }
+    .place-table th:last-child { border-radius: 0 6px 0 0; }
+
+    .place-table td {
+      padding: 4px;
+      text-align: center;
+      border: 2px solid var(--gray-300);
+      border-top: none;
+      background: white;
+    }
+
+    .place-table td:first-child { border-radius: 0 0 0 6px; }
+    .place-table td:last-child { border-radius: 0 0 6px 0; }
+
+    .digit-input {
+      width: 100%;
+      max-width: 100%;
+      height: 40px;
+      font-family: inherit;
+      font-size: clamp(1.1rem, 3.5vw, 1.45rem);
+      font-weight: 800;
+      text-align: center;
+      border: 2px solid var(--gray-200);
+      border-radius: 6px;
+      background: var(--gray-50);
+      transition: all 0.15s;
+      caret-color: transparent;
+    }
+
+    .digit-input:focus {
+      outline: none;
+      border-color: var(--purple);
+      background: white;
+      box-shadow: 0 0 0 3px var(--purple-light);
+    }
+
+    .digit-input.correct {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+
+    .digit-input.incorrect {
+      border-color: var(--red);
+      background: var(--red-light);
+      animation: shake 0.35s;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-3px); }
+      75% { transform: translateX(3px); }
+    }
+
+    .col-u { color: var(--blue) !important; }
+    .col-d { color: var(--red) !important; }
+    .col-c { color: var(--green) !important; }
+
+    th.col-u { background: var(--blue-light) !important; }
+    th.col-d { background: var(--red-light) !important; }
+    th.col-c { background: var(--green-light) !important; }
+
+    .digit-input.col-u { color: var(--blue); }
+    .digit-input.col-d { color: var(--red); }
+    .digit-input.col-c { color: var(--green); }
+
+    /* Decomposition rows */
+    .decomp-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+      justify-content: center;
+    }
+
+    .decomp-item {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .decomp-input {
+      width: 36px;
+      height: 36px;
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-align: center;
+      border: 2px solid var(--gray-200);
+      border-radius: 6px;
+      background: var(--gray-50);
+      transition: all 0.15s;
+      caret-color: transparent;
+    }
+
+    .decomp-input:focus {
+      outline: none;
+      border-color: var(--purple);
+      background: white;
+      box-shadow: 0 0 0 3px var(--purple-light);
+    }
+
+    .decomp-input.correct {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+
+    .decomp-input.incorrect {
+      border-color: var(--red);
+      background: var(--red-light);
+      animation: shake 0.35s;
+    }
+
+    .decomp-label {
+      font-weight: 700;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .plus-sign {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--gray-400);
+      margin: 0 1px;
+    }
+
+    .units-input {
+      min-width: 72px;
+      width: auto;
+      padding: 0 6px;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+    }
+
+    /* Legend compact */
+    .legend {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .legend span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.u { background: var(--blue); }
+    .legend-dot.d { background: var(--red); }
+    .legend-dot.c { background: var(--green); }
+
+    /* Actions bar */
+    .actions-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+
+    /* Floating keyboard - improved */
+    .keyboard-overlay {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 2px solid var(--gray-200);
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+      padding: 8px 10px 10px;
+      z-index: 1000;
+      transform: translateY(100%);
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      max-width: 420px;
+      margin: 0 auto;
+      border-radius: 14px 14px 0 0;
+    }
+
+    .keyboard-overlay.visible {
+      transform: translateY(0);
+    }
+
+    .keyboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      padding: 0 2px;
+    }
+
+    .keyboard-header span {
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: var(--gray-600);
+    }
+
+    .keyboard-close {
+      background: var(--gray-100);
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-600);
+    }
+
+    .keyboard-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .key {
+      font-family: inherit;
+      font-size: 1.25rem;
+      font-weight: 800;
+      height: 44px;
+      border: none;
+      border-radius: 8px;
+      background: var(--gray-100);
+      color: var(--gray-800);
+      cursor: pointer;
+      transition: all 0.12s;
+      user-select: none;
+    }
+
+    .key:active {
+      transform: scale(0.92);
+      background: var(--purple-light);
+      color: var(--purple);
+    }
+
+    .key-action {
+      background: var(--purple);
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    .key-back {
+      background: var(--red-light);
+      color: var(--red);
+      font-size: 1.1rem;
+    }
+
+    .key-clear {
+      background: var(--amber-light);
+      color: var(--amber);
+      font-size: 0.8rem;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-120px);
+      background: white;
+      padding: 12px 22px;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      font-weight: 800;
+      font-size: 1.05rem;
+      z-index: 2000;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 90vw;
+    }
+
+    .toast.visible {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast.success { border: 3px solid var(--green); color: var(--green); }
+    .toast.error { border: 3px solid var(--red); color: var(--red); }
+    .toast.info { border: 3px solid var(--blue); color: var(--blue); }
+
+    #confetti-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1500;
+    }
+
+    /* Larger screens - more breathing room but still compact */
+    @media (min-width: 768px) {
+      body {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 12px 16px;
+        padding-bottom: calc(16px + var(--kb-height));
+      }
+
+      .digit-input {
+        height: 44px;
+        font-size: 1.5rem;
+      }
+
+      .decomp-input {
+        width: 40px;
+        height: 40px;
+        font-size: 1.15rem;
+      }
+
+      .units-input {
+        min-width: 88px;
+        font-size: 1rem;
+      }
+
+      .section-title {
+        font-size: 1rem;
+      }
+
+      .key {
+        height: 48px;
+        font-size: 1.3rem;
+      }
+    }
+
+    @media (min-width: 1100px) {
+      body {
+        max-width: 1080px;
+      }
+    }
+
+    /* Very small screens */
+    @media (max-width: 400px) {
+      .digit-input { height: 36px; font-size: 1.05rem; }
+      .decomp-input { width: 32px; height: 32px; font-size: 0.95rem; }
+      .units-input { min-width: 60px; font-size: 0.85rem; }
+      .btn { padding: 6px 10px; font-size: 0.8rem; }
+      .key { height: 40px; font-size: 1.1rem; }
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="header">
+    <h1>🔢 Descomponer Números</h1>
+    <div class="header-actions">
+      <button class="btn btn-secondary btn-icon" id="btnFullscreen" title="Pantalla completa">⛶</button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="control-group">
+      <label for="digitSelect">Cifras:</label>
+      <select id="digitSelect">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7" selected>7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+      </select>
+    </div>
+
+    <div class="mode-toggle">
+      <button class="mode-btn active" data-mode="random">Aleatorio</button>
+      <button class="mode-btn" data-mode="manual">Manual</button>
+    </div>
+
+    <div class="control-group" id="manualGroup" style="display:none;">
+      <label for="manualNumber">Número:</label>
+      <input type="text" class="manual-input" id="manualNumber" placeholder="Ej: 2746918" maxlength="9" inputmode="numeric">
+    </div>
+
+    <button class="btn btn-primary" id="btnGenerate">🎲 Nuevo</button>
+  </div>
+
+  <div class="number-display">
+    <div class="number-box" id="numberDisplay">—</div>
+    <div class="arrow-down">↓</div>
+  </div>
+
+  <div class="main-content">
+    <div class="table-section">
+      <div class="section-title">📋 Coloca cada cifra en su lugar</div>
+      <div class="place-table-wrap">
+        <table class="place-table" id="placeTable">
+          <thead><tr id="headerRow"></tr></thead>
+          <tbody><tr id="digitRow"></tr></tbody>
+        </table>
+      </div>
+      <div class="legend">
+        <span><span class="legend-dot u"></span> Unidades</span>
+        <span><span class="legend-dot d"></span> Decenas</span>
+        <span><span class="legend-dot c"></span> Centenas</span>
+      </div>
+    </div>
+
+    <div class="decomp-section">
+      <div class="section-title">✏️ Según sus cifras</div>
+      <div class="decomp-row" id="cifrasRow"></div>
+    </div>
+
+    <div class="decomp-section" id="unidadesSection">
+      <div class="section-title">📐 Según unidades</div>
+      <div class="decomp-row" id="unidadesRow"></div>
+    </div>
+  </div>
+
+  <div class="actions-bar">
+    <button class="btn btn-success" id="btnCheck">✅ Comprobar</button>
+    <button class="btn btn-danger" id="btnClear">🗑️ Borrar</button>
+    <button class="btn btn-secondary" id="btnReset">🔄 Reiniciar</button>
+    <button class="btn btn-amber" id="btnNew">🎲 Nuevo</button>
+  </div>
+
+  <!-- Floating keyboard -->
+  <div class="keyboard-overlay" id="keyboard">
+    <div class="keyboard-header">
+      <span id="keyboardLabel">Teclado numérico</span>
+      <button class="keyboard-close" id="keyboardClose">✕</button>
+    </div>
+    <div class="keyboard-grid">
+      <button class="key" data-key="1">1</button>
+      <button class="key" data-key="2">2</button>
+      <button class="key" data-key="3">3</button>
+      <button class="key" data-key="4">4</button>
+      <button class="key" data-key="5">5</button>
+      <button class="key" data-key="6">6</button>
+      <button class="key" data-key="7">7</button>
+      <button class="key" data-key="8">8</button>
+      <button class="key" data-key="9">9</button>
+      <button class="key" data-key="0">0</button>
+      <button class="key key-back" data-key="back">⌫</button>
+      <button class="key key-clear" data-key="clear">Borrar</button>
+      <button class="key key-action" data-key="next" style="grid-column: span 2;">Siguiente →</button>
+      <button class="key key-action" data-key="done">Listo</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ========== Place value definitions ==========
+    const PLACE_LABELS = [
+      { short: 'CMM', full: 'Centenas de millón', power: 8, type: 'c' },
+      { short: 'DMM', full: 'Decenas de millón', power: 7, type: 'd' },
+      { short: 'UMM', full: 'Unidades de millón', power: 6, type: 'u' },
+      { short: 'CM',  full: 'Centenas de mil', power: 5, type: 'c' },
+      { short: 'DM',  full: 'Decenas de mil', power: 4, type: 'd' },
+      { short: 'UM',  full: 'Unidades de mil', power: 3, type: 'u' },
+      { short: 'C',   full: 'Centenas', power: 2, type: 'c' },
+      { short: 'D',   full: 'Decenas', power: 1, type: 'd' },
+      { short: 'U',   full: 'Unidades', power: 0, type: 'u' }
+    ];
+
+    // ========== State ==========
+    let currentNumber = null;
+    let currentDigits = [];
+    let numDigits = 7;
+    let mode = 'random';
+    let activeInput = null;
+    let allInputs = [];
+
+    // ========== Audio ==========
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playTone(freq, duration, type = 'sine', volume = 0.15) {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function playSuccess() {
+      playTone(523.25, 0.12, 'sine', 0.12);
+      setTimeout(() => playTone(659.25, 0.12, 'sine', 0.12), 100);
+      setTimeout(() => playTone(783.99, 0.2, 'sine', 0.15), 200);
+    }
+
+    function playError() {
+      playTone(200, 0.15, 'square', 0.08);
+      setTimeout(() => playTone(150, 0.2, 'square', 0.08), 120);
+    }
+
+    function playClick() {
+      playTone(800, 0.04, 'sine', 0.06);
+    }
+
+    // ========== Confetti ==========
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const particles = [];
+      const colors = ['#2563eb', '#dc2626', '#16a34a', '#7c3aed', '#d97706', '#ec4899', '#06b6d4'];
+      for (let i = 0; i < 100; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          r: Math.random() * 7 + 3,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          speed: Math.random() * 3 + 2,
+          angle: Math.random() * Math.PI * 2,
+          spin: Math.random() * 0.2 - 0.1
+        });
+      }
+      let frame = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let alive = false;
+        particles.forEach(p => {
+          p.y += p.speed;
+          p.x += Math.sin(p.angle) * 1.5;
+          p.angle += p.spin;
+          if (p.y < canvas.height + 20) {
+            alive = true;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.angle);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 0.6);
+            ctx.restore();
+          }
+        });
+        frame++;
+        if (alive && frame < 140) requestAnimationFrame(animate);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      animate();
+    }
+
+    // ========== Toast ==========
+    function showToast(message, type = 'info', duration = 2500) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast ' + type + ' visible';
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => toast.classList.remove('visible'), duration);
+    }
+
+    // ========== Format helpers ==========
+    function formatNumber(n) {
+      return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    // Format a raw digit string with Spanish thousand separators (dots)
+    function formatWithDots(raw) {
+      // Remove any existing non-digits
+      const digits = String(raw).replace(/\D/g, '');
+      if (!digits) return '';
+      // Add dots from the right
+      return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function getPlaces(n) {
+      return PLACE_LABELS.slice(9 - n);
+    }
+
+    // ========== Generate number ==========
+    function generateNumber() {
+      numDigits = parseInt(document.getElementById('digitSelect').value, 10);
+
+      if (mode === 'manual') {
+        const raw = document.getElementById('manualNumber').value.replace(/\D/g, '');
+        if (!raw || raw.length < 2 || raw.length > 9) {
+          showToast('Introduce un número de 2 a 9 cifras', 'error');
+          return;
+        }
+        if (raw.length !== numDigits) {
+          document.getElementById('digitSelect').value = String(raw.length);
+          numDigits = raw.length;
+        }
+        currentNumber = parseInt(raw, 10);
+        if (isNaN(currentNumber) || currentNumber < 10) {
+          showToast('Número no válido', 'error');
+          return;
+        }
+      } else {
+        const min = Math.pow(10, numDigits - 1);
+        const max = Math.pow(10, numDigits) - 1;
+        currentNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      currentDigits = String(currentNumber).split('').map(Number);
+      document.getElementById('numberDisplay').textContent = formatNumber(currentNumber);
+      buildTable();
+      buildDecompositions();
+      clearAllInputs();
+      hideKeyboard();
+      playClick();
+      showToast('¡Nuevo número listo!', 'info', 1400);
+    }
+
+    // ========== Build place value table ==========
+    function buildTable() {
+      const places = getPlaces(numDigits);
+      const headerRow = document.getElementById('headerRow');
+      const digitRow = document.getElementById('digitRow');
+      headerRow.innerHTML = '';
+      digitRow.innerHTML = '';
+
+      places.forEach((place, i) => {
+        const th = document.createElement('th');
+        th.textContent = place.short;
+        th.className = 'col-' + place.type;
+        th.title = place.full;
+        headerRow.appendChild(th);
+
+        const td = document.createElement('td');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'digit-input col-' + place.type;
+        input.maxLength = 1;
+        input.inputMode = 'numeric';
+        input.dataset.index = i;
+        input.dataset.expected = currentDigits[i];
+        input.autocomplete = 'off';
+        input.readOnly = true;
+        td.appendChild(input);
+        digitRow.appendChild(td);
+      });
+      collectInputs();
+    }
+
+    // ========== Build decomposition rows ==========
+    function buildDecompositions() {
+      const places = getPlaces(numDigits);
+      const cifrasRow = document.getElementById('cifrasRow');
+      const unidadesRow = document.getElementById('unidadesRow');
+      cifrasRow.innerHTML = '';
+      unidadesRow.innerHTML = '';
+
+      places.forEach((place, i) => {
+        // Cifras
+        const itemC = document.createElement('div');
+        itemC.className = 'decomp-item';
+
+        const inputC = document.createElement('input');
+        inputC.type = 'text';
+        inputC.className = 'decomp-input col-' + place.type;
+        inputC.maxLength = 1;
+        inputC.inputMode = 'numeric';
+        inputC.dataset.type = 'cifra';
+        inputC.dataset.index = i;
+        inputC.dataset.expected = currentDigits[i];
+        inputC.autocomplete = 'off';
+        inputC.readOnly = true;
+
+        const labelC = document.createElement('span');
+        labelC.className = 'decomp-label col-' + place.type;
+        labelC.textContent = place.short;
+
+        itemC.appendChild(inputC);
+        itemC.appendChild(labelC);
+        cifrasRow.appendChild(itemC);
+
+        if (i < places.length - 1) {
+          const plus = document.createElement('span');
+          plus.className = 'plus-sign';
+          plus.textContent = '+';
+          cifrasRow.appendChild(plus);
+        }
+
+        // Unidades
+        const value = currentDigits[i] * Math.pow(10, place.power);
+        const itemU = document.createElement('div');
+        itemU.className = 'decomp-item';
+
+        const inputU = document.createElement('input');
+        inputU.type = 'text';
+        inputU.className = 'decomp-input units-input';
+        inputU.inputMode = 'numeric';
+        inputU.dataset.type = 'unidad';
+        inputU.dataset.index = i;
+        inputU.dataset.expected = formatNumber(value);
+        inputU.dataset.expectedRaw = String(value);
+        inputU.autocomplete = 'off';
+        inputU.readOnly = true;
+
+        const len = formatNumber(value).length;
+        inputU.style.minWidth = Math.max(64, len * 11 + 14) + 'px';
+
+        itemU.appendChild(inputU);
+        unidadesRow.appendChild(itemU);
+
+        if (i < places.length - 1) {
+          const plus2 = document.createElement('span');
+          plus2.className = 'plus-sign';
+          plus2.textContent = '+';
+          unidadesRow.appendChild(plus2);
+        }
+      });
+      collectInputs();
+    }
+
+    function collectInputs() {
+      allInputs = Array.from(document.querySelectorAll('.digit-input, .decomp-input'));
+    }
+
+    function clearAllInputs() {
+      allInputs.forEach(inp => {
+        inp.value = '';
+        inp.classList.remove('correct', 'incorrect');
+      });
+    }
+
+    function resetAll() {
+      clearAllInputs();
+      showToast('Respuestas borradas', 'info', 1200);
+      playClick();
+    }
+
+    // ========== Check answers ==========
+    function checkAnswers() {
+      let allCorrect = true;
+      let anyFilled = false;
+
+      allInputs.forEach(inp => {
+        const val = inp.value.trim();
+        if (val !== '') anyFilled = true;
+
+        if (inp.dataset.type === 'unidad') {
+          const normalized = val.replace(/\./g, '');
+          const expNorm = inp.dataset.expectedRaw;
+          if (normalized === expNorm) {
+            inp.classList.remove('incorrect');
+            inp.classList.add('correct');
+          } else {
+            inp.classList.remove('correct');
+            if (val !== '') {
+              inp.classList.add('incorrect');
+              allCorrect = false;
+            } else {
+              allCorrect = false;
+            }
+          }
+        } else {
+          const expected = inp.dataset.expected;
+          if (val === expected) {
+            inp.classList.remove('incorrect');
+            inp.classList.add('correct');
+          } else {
+            inp.classList.remove('correct');
+            if (val !== '') {
+              inp.classList.add('incorrect');
+              allCorrect = false;
+            } else {
+              allCorrect = false;
+            }
+          }
+        }
+      });
+
+      if (!anyFilled) {
+        showToast('Escribe alguna respuesta primero', 'info');
+        return;
+      }
+
+      if (allCorrect) {
+        playSuccess();
+        launchConfetti();
+        showToast('🎉 ¡Excelente! Todo correcto', 'success', 3000);
+      } else {
+        playError();
+        showToast('❌ Hay errores. ¡Sigue intentando!', 'error', 2500);
+      }
+    }
+
+    // ========== Keyboard ==========
+    const keyboard = document.getElementById('keyboard');
+    const root = document.documentElement;
+
+    function updateKeyboardSpace(visible) {
+      if (visible) {
+        // Measure keyboard height after it becomes visible
+        requestAnimationFrame(() => {
+          const h = keyboard.offsetHeight || 220;
+          root.style.setProperty('--kb-height', h + 'px');
+          // Scroll active input into comfortable view
+          if (activeInput) {
+            setTimeout(() => {
+              activeInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 50);
+          }
+        });
+      } else {
+        root.style.setProperty('--kb-height', '0px');
+      }
+    }
+
+    function showKeyboard(input) {
+      activeInput = input;
+      keyboard.classList.add('visible');
+      updateKeyboardSpace(true);
+      allInputs.forEach(i => i.style.outline = '');
+      input.style.outline = '3px solid var(--purple)';
+    }
+
+    function hideKeyboard() {
+      keyboard.classList.remove('visible');
+      updateKeyboardSpace(false);
+      if (activeInput) activeInput.style.outline = '';
+      activeInput = null;
+    }
+
+    function focusNext() {
+      if (!activeInput) return;
+      const idx = allInputs.indexOf(activeInput);
+      if (idx >= 0 && idx < allInputs.length - 1) {
+        const next = allInputs[idx + 1];
+        showKeyboard(next);
+      } else {
+        hideKeyboard();
+      }
+    }
+
+    function handleKey(key) {
+      if (!activeInput) return;
+      playClick();
+
+      if (key === 'back') {
+        if (activeInput.dataset.type === 'unidad') {
+          // Remove last digit (ignoring dots), then reformat
+          let digits = activeInput.value.replace(/\D/g, '');
+          digits = digits.slice(0, -1);
+          activeInput.value = formatWithDots(digits);
+        } else {
+          activeInput.value = activeInput.value.slice(0, -1);
+        }
+      } else if (key === 'clear') {
+        activeInput.value = '';
+      } else if (key === 'next') {
+        focusNext();
+        return;
+      } else if (key === 'done') {
+        hideKeyboard();
+        return;
+      } else {
+        // Digit pressed
+        if (activeInput.classList.contains('digit-input') || activeInput.dataset.type === 'cifra') {
+          activeInput.value = key;
+          setTimeout(focusNext, 140);
+        } else if (activeInput.dataset.type === 'unidad') {
+          // Append digit and auto-format with dots
+          let digits = activeInput.value.replace(/\D/g, '');
+          if (digits.length < 10) {
+            digits += key;
+            activeInput.value = formatWithDots(digits);
+          }
+        }
+      }
+      activeInput.classList.remove('correct', 'incorrect');
+    }
+
+    // Physical keyboard
+    document.addEventListener('keydown', (e) => {
+      if (!activeInput) return;
+
+      if (e.key >= '0' && e.key <= '9') {
+        e.preventDefault();
+        handleKey(e.key);
+      } else if (e.key === 'Backspace') {
+        e.preventDefault();
+        handleKey('back');
+      } else if (e.key === 'Tab' || e.key === 'Enter') {
+        e.preventDefault();
+        focusNext();
+      } else if (e.key === 'Escape') {
+        hideKeyboard();
+      }
+    });
+
+    // ========== Event listeners ==========
+    document.getElementById('btnGenerate').addEventListener('click', generateNumber);
+    document.getElementById('btnNew').addEventListener('click', generateNumber);
+    document.getElementById('btnCheck').addEventListener('click', checkAnswers);
+    document.getElementById('btnClear').addEventListener('click', resetAll);
+    document.getElementById('btnReset').addEventListener('click', () => {
+      clearAllInputs();
+      generateNumber();
+    });
+
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        mode = btn.dataset.mode;
+        document.getElementById('manualGroup').style.display = mode === 'manual' ? 'flex' : 'none';
+      });
+    });
+
+    document.getElementById('digitSelect').addEventListener('change', () => {
+      if (mode === 'random') generateNumber();
+    });
+
+    document.getElementById('btnFullscreen').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.() ||
+        document.documentElement.webkitRequestFullscreen?.();
+      } else {
+        document.exitFullscreen?.() || document.webkitExitFullscreen?.();
+      }
+    });
+
+    document.querySelectorAll('.key').forEach(btn => {
+      btn.addEventListener('click', () => handleKey(btn.dataset.key));
+    });
+
+    document.getElementById('keyboardClose').addEventListener('click', hideKeyboard);
+
+    // Focus → show keyboard
+    document.addEventListener('click', (e) => {
+      if (e.target.matches('.digit-input, .decomp-input')) {
+        showKeyboard(e.target);
+      }
+    });
+
+    document.getElementById('manualNumber').addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 9);
+    });
+
+    // Init
+    generateNumber();
+
+    document.body.addEventListener('click', () => {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }, { once: true });
+  </script>
+</body>
+</html>
